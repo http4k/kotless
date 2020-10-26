@@ -49,7 +49,7 @@ internal object DynamicRoutesProcessor : SubTypesProcessor<Unit>() {
         val entrypoint = context.output.get(EntrypointProcessor).entrypoint
 
         processClasses(files, binding) { klass, _ ->
-            klass.visitNamedFunctions(filter = { func -> func.name == Kotless::prepare.name }) { func ->
+            klass.visitNamedFunctions(filter = { func -> func.name == Kotless::handler.name }) { func ->
                 func.visitCallExpressionsWithReferences(binding = binding, filter = { it.getFqName(binding) in functions.keys }) { element ->
                     val outer = getDynamicPath(element, binding)
 

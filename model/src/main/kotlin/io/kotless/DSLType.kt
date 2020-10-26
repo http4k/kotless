@@ -6,5 +6,6 @@ package io.kotless
 enum class DSLType {
     Kotless,
     Ktor,
-    SpringBoot
+    SpringBoot,
+    http4k
 }

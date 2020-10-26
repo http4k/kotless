@@ -27,7 +27,7 @@ internal object GlobalActionsProcessor : SubTypesProcessor<GlobalActionsProcesso
         val permissions = HashSet<Permission>()
 
         processClasses(files, binding) { klass, _ ->
-            klass.visitNamedFunctions(filter = { func -> func.name == Kotless::prepare.name }) { func ->
+            klass.visitNamedFunctions(filter = { func -> func.name == Kotless::handler.name }) { func ->
                 func.visitCallExpressionsWithReferences(
                     filter = { it.getFqName(binding) == "io.ktor.application.ApplicationEvents.subscribe" }, binding = binding, visitOnce = true
                 ) { element ->

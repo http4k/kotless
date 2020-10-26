@@ -53,13 +53,13 @@ class KotlessConfig(project: Project) : Serializable {
             require(types.isNotEmpty()) {
                 """
                 |Kotless was unable to determine DSL type of application.
-                |Either dependency with one of the DSLs (`kotless-lang`, `ktor-lang`, `spring-boot-lang`) should be added, or DSL should be specified manually.
+                |Either dependency with one of the DSLs (`kotless-lang`, `ktor-lang`, `http4k-lang`, `spring-boot-lang`) should be added, or DSL should be specified manually.
                 |""".trimMargin()
             }
             require(types.size <= 1) {
                 """
                 |Kotless was unable to determine DSL type of application. 
-                |There was more than one DSL dependency (of type `lang`, `ktor-lang`, `spring-boot-lang`) should be added, or DSL should be specified manually.
+                |There was more than one DSL dependency (of type `lang`, `ktor-lang`, `http4k-lang`, `spring-boot-lang`) should be added, or DSL should be specified manually.
                 |""".trimMargin()
             }
 
@@ -76,6 +76,7 @@ class KotlessConfig(project: Project) : Serializable {
         internal val resolvedStaticsRoot
             get() = when (typeOrDefault) {
                 DSLType.Ktor -> workingRoot
+                DSLType.http4k -> workingRoot
                 DSLType.SpringBoot, DSLType.Kotless -> staticsRoot
             }
 

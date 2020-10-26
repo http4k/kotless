@@ -15,6 +15,9 @@ abstract class ExamplesTestBase {
             Arguments.of("ktor", "site"),
             Arguments.of("ktor", "shortener"),
 
+            Arguments.of("http4k", "site"),
+            Arguments.of("http4k", "shortener"),
+
             Arguments.of("spring", "site"),
             Arguments.of("spring", "shortener")
         )
@@ -25,6 +28,7 @@ abstract class ExamplesTestBase {
             Arguments.of("kotless", "shortener"),
 
             Arguments.of("ktor", "shortener"),
+            Arguments.of("http4k", "shortener"),
 
             Arguments.of("spring", "site"),
             Arguments.of("spring", "shortener")

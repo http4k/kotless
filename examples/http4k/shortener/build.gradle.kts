@@ -15,8 +15,6 @@ dependencies {
 
     implementation("io.kotless", "http4k-lang", "0.1.7-beta-4")
     implementation("io.ktor", "ktor-html-builder", "1.3.2")
-
-    implementation("io.kotless", "ktor-lang", "0.1.7-beta-4")
 }
 
 kotless {

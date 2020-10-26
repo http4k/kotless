@@ -8,6 +8,10 @@ version = rootProject.version
 dependencies {
     api(project(":dsl:http4k:http4k-lang"))
     api("org.http4k", "http4k-core", Versions.http4k)
+
+    // to remove - replace with kotlin reflect
+    api(project(":dsl:ktor:ktor-lang"))
+    api("io.ktor", "ktor-server-netty", Versions.ktor)
 }
 
 publishJar {

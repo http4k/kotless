@@ -46,7 +46,7 @@ internal object StaticRoutesProcessor : SubTypesProcessor<Unit>() {
 
     override fun process(files: Set<KtFile>, binding: BindingContext, context: ProcessorContext) {
         processClassesOrObjects(files, binding) { klass, _ ->
-            klass.visitNamedFunctions(filter = { func -> func.name == Kotless::prepare.name }) { func ->
+            klass.visitNamedFunctions(filter = { func -> func.name == Kotless::handler.name }) { func ->
                 func.visitCallExpressionsWithReferences(filter = { it.getFqName(binding) in functions }, binding = binding) { element ->
                     val outer = getStaticPath(element, binding)
                     val base = getStaticRootFolder(element, binding, context)

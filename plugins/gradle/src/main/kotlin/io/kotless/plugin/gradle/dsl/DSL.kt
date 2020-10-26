@@ -3,6 +3,7 @@ package io.kotless.plugin.gradle.dsl
 import io.kotless.DSLType
 import io.kotless.parser.DSLDescriptor
 import io.kotless.parser.KotlessDescriptor
+import io.kotless.parser.http4k.Http4kDescriptor
 import io.kotless.parser.ktor.KtorDescriptor
 import io.kotless.parser.spring.SpringBootDescriptor
 import io.kotless.plugin.gradle.utils.gradle.myExt
@@ -25,4 +26,5 @@ val DSLType.descriptor: DSLDescriptor
         DSLType.Kotless -> KotlessDescriptor
         DSLType.Ktor -> KtorDescriptor
         DSLType.SpringBoot -> SpringBootDescriptor
+        DSLType.http4k -> Http4kDescriptor
     }

@@ -11,6 +11,8 @@ include(":ktor:shortener")
 include(":spring:site")
 include(":spring:shortener")
 
+include(":http4k:site")
+include(":http4k:shortener")
 
 pluginManagement {
     repositories {

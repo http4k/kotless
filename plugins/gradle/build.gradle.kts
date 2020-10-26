@@ -33,6 +33,7 @@ dependencies {
     //Parsing
     implementation(project(":dsl:kotless:kotless-lang-parser"))
     implementation(project(":dsl:ktor:ktor-lang-parser"))
+    implementation(project(":dsl:http4k:http4k-lang-parser"))
     implementation(project(":dsl:spring:spring-lang-parser"))
     implementation(project(":engine"))
 
