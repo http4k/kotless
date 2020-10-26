@@ -24,6 +24,7 @@ fun main() {
     println(Java8HttpClient()(Request(POST, "http://localhost:9000/echo/hello")))
 }
 
+@Suppress("UNCHECKED_CAST")
 private fun hackEnvironment(newenv: Map<String, String>) {
     val classes = Collections::class.java.declaredClasses
     val env = System.getenv()
