@@ -1,4 +1,4 @@
-package io.kotless.parser.ktor.processor.action
+package io.kotless.parser.http4k.processor.action
 
 import io.kotless.dsl.http4k.Kotless
 import io.kotless.parser.processor.ProcessorContext

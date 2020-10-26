@@ -1,4 +1,4 @@
-package io.kotless.parser.ktor
+package io.kotless.parser.http4k
 
 import io.kotless.parser.DSLDescriptor
 

@@ -20,7 +20,7 @@ object Constants {
             const val workingDir = "WORKING_DIR"
         }
 
-        object KtorOrSpring {
+        object KtorOrSpringOrHttp4k {
             const val classToStart = "CLASS_TO_START"
         }
     }

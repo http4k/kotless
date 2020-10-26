@@ -1,4 +1,4 @@
-package io.kotless.parser.ktor.processor.route
+package io.kotless.parser.http4k.processor.route
 
 import io.kotless.Application
 import io.kotless.Application.Events
@@ -6,7 +6,7 @@ import io.kotless.HttpMethod
 import io.kotless.ScheduledEventType
 import io.kotless.URIPath
 import io.kotless.dsl.http4k.Kotless
-import io.kotless.parser.ktor.processor.action.GlobalActionsProcessor
+import io.kotless.parser.http4k.processor.action.GlobalActionsProcessor
 import io.kotless.parser.processor.ProcessorContext
 import io.kotless.parser.processor.SubTypesProcessor
 import io.kotless.parser.processor.config.EntrypointProcessor

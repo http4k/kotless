@@ -1,11 +1,26 @@
 package io.kotless.plugin.gradle.tasks.local
 
-import io.kotless.*
+import io.kotless.Constants
+import io.kotless.DSLType
+import io.kotless.InternalAPI
 import io.kotless.parser.LocalParser
-import io.kotless.plugin.gradle.dsl.*
-import io.kotless.plugin.gradle.utils.gradle.*
+import io.kotless.plugin.gradle.dsl.KotlessDSL
+import io.kotless.plugin.gradle.dsl.descriptor
+import io.kotless.plugin.gradle.dsl.kotless
+import io.kotless.plugin.gradle.utils.gradle.Dependencies
+import io.kotless.plugin.gradle.utils.gradle.Groups
+import io.kotless.plugin.gradle.utils.gradle.myGetByName
+import io.kotless.plugin.gradle.utils.gradle.myKtSourceSet
+import io.kotless.plugin.gradle.utils.gradle.myLocal
 import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.*
+import org.gradle.api.tasks.CacheableTask
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.JavaExec
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.dependencies
 import java.io.File
 
@@ -63,7 +78,7 @@ internal open class KotlessLocalRunTask : DefaultTask() {
 
             if (type == DSLType.Ktor || type == DSLType.SpringBoot) {
                 val local = LocalParser.parse(myAllSources, Dependencies.getDependencies(project))
-                environment[Constants.Local.KtorOrSpring.classToStart] = local.entrypoint.qualifiedName.substringBefore("::")
+                environment[Constants.Local.KtorOrSpringOrHttp4k.classToStart] = local.entrypoint.qualifiedName.substringBefore("::")
             }
 
             if (type == DSLType.Kotless) {

@@ -1,9 +1,9 @@
-package io.kotless.parser.ktor
+package io.kotless.parser.http4k
 
 import io.kotless.parser.Parser
-import io.kotless.parser.ktor.processor.action.GlobalActionsProcessor
-import io.kotless.parser.ktor.processor.route.DynamicRoutesProcessor
-import io.kotless.parser.ktor.processor.route.StaticRoutesProcessor
+import io.kotless.parser.http4k.processor.action.GlobalActionsProcessor
+import io.kotless.parser.http4k.processor.route.DynamicRoutesProcessor
+import io.kotless.parser.http4k.processor.route.StaticRoutesProcessor
 import io.kotless.parser.processor.config.EntrypointProcessor
 
 /**

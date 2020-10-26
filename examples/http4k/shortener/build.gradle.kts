@@ -13,14 +13,16 @@ dependencies {
     implementation("commons-validator", "commons-validator", "1.6")
     implementation("com.amazonaws", "aws-java-sdk-dynamodb", "1.11.650")
 
-    implementation("io.kotless", "ktor-lang", "0.1.7-beta-4")
+    implementation("io.kotless", "http4k-lang", "0.1.7-beta-4")
     implementation("io.ktor", "ktor-html-builder", "1.3.2")
+
+    implementation("io.kotless", "ktor-lang", "0.1.7-beta-4")
 }
 
 kotless {
     config {
-        bucket = "eu.ktor-short.s3.ktls.aws.intellij.net"
-        prefix = "ktor-short"
+        bucket = "eu.http4k-short.s3.ktls.aws.intellij.net"
+        prefix = "http4k-short"
 
         terraform {
             profile = "kotless-jetbrains"
@@ -29,7 +31,7 @@ kotless {
     }
 
     webapp {
-        route53 = Route53("ktor.short", "kotless.io")
+        route53 = Route53("http4k.short", "kotless.io")
     }
 
     extensions {

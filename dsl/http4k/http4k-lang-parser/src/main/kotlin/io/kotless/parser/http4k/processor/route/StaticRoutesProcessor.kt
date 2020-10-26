@@ -1,10 +1,10 @@
-package io.kotless.parser.ktor.processor.route
+package io.kotless.parser.http4k.processor.route
 
 import io.kotless.Application
 import io.kotless.MimeType
 import io.kotless.URIPath
 import io.kotless.dsl.http4k.Kotless
-import io.kotless.parser.ktor.utils.toMime
+import io.kotless.parser.http4k.utils.toMime
 import io.kotless.parser.processor.ProcessorContext
 import io.kotless.parser.processor.SubTypesProcessor
 import io.kotless.parser.utils.errors.error

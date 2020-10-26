@@ -1,4 +1,4 @@
-package io.kotless.parser.ktor.utils
+package io.kotless.parser.http4k.utils
 
 import io.kotless.MimeType
 import io.ktor.http.ContentType
