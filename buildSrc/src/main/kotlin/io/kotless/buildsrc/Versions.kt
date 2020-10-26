@@ -16,6 +16,8 @@ object Versions {
 
     const val ktor = "1.3.2"
 
+    const val http4k = "3.269.0"
+
     const val springBoot = "2.3.0.RELEASE"
     const val spring = "5.2.6.RELEASE"
 

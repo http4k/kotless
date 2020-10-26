@@ -19,4 +19,8 @@ include(":dsl:ktor:ktor-lang")
 include(":dsl:ktor:ktor-lang-local")
 include(":dsl:ktor:ktor-lang-parser")
 
+include(":dsl:http4k:http4k-lang")
+include(":dsl:http4k:http4k-lang-local")
+include(":dsl:http4k:http4k-lang-parser")
+
 include(":plugins:gradle")
