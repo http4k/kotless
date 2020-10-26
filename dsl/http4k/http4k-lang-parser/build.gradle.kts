@@ -1,3 +1,4 @@
+import io.kotless.buildsrc.Versions
 import io.kotless.buildsrc.optInInternalAPI
 import tanvd.kosogor.proxy.publishJar
 
@@ -8,8 +9,7 @@ dependencies {
     api(project(":schema"))
     api(project(":dsl:http4k:http4k-lang"))
     api(project(":dsl:common:lang-parser-common"))
-
-    api(project(":dsl:ktor:ktor-lang"))
+    api("org.jetbrains.kotlin", "kotlin-reflect", Versions.kotlin)
 }
 
 publishJar {

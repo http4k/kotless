@@ -4,7 +4,6 @@ import io.kotless.Application
 import io.kotless.MimeType
 import io.kotless.URIPath
 import io.kotless.dsl.http4k.Kotless
-import io.kotless.parser.http4k.utils.toMime
 import io.kotless.parser.processor.ProcessorContext
 import io.kotless.parser.processor.SubTypesProcessor
 import io.kotless.parser.utils.errors.error
@@ -23,8 +22,7 @@ import io.kotless.parser.utils.reversed
 import io.kotless.resource.StaticResource
 import io.kotless.toURIPath
 import io.kotless.utils.TypedStorage
-import io.ktor.http.ContentType
-import io.ktor.http.defaultForFile
+import org.http4k.core.MimeTypes
 import org.jetbrains.kotlin.lexer.KtSingleValueToken
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtElement
@@ -137,11 +135,17 @@ internal object StaticRoutesProcessor : SubTypesProcessor<Unit>() {
     }
 
     private fun createResource(file: File, path: URIPath, context: ProcessorContext) {
-        val key = TypedStorage.Key<StaticResource>()
-        val mime = MimeType.forFile(file) ?: ContentType.defaultForFile(file).toMime()
+        val mime = MimeType.forFile(file)
+            ?: MimeTypes().forFile(file.name).value.split("/")
+                .let { parts ->
+                    MimeType.values()
+                        .find { it.mimeText == "${parts[0]}/${parts[1]}" }
+                }
         require(mime != null) { "Unknown mime type for file $file" }
 
         val resource = StaticResource(URIPath("static", path), file, mime)
+
+        val key = TypedStorage.Key<StaticResource>()
 
         context.resources.register(key, resource)
         context.routes.register(Application.ApiGateway.StaticRoute(path, key))
