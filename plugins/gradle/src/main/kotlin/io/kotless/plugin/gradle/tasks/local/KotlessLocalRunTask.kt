@@ -62,8 +62,8 @@ internal open class KotlessLocalRunTask : DefaultTask() {
     fun act() = with(project) {
         val dsl = Dependencies.dsl(project)
 
-        require(dsl.isNotEmpty()) { "Cannot find \"kotless-lang\", \"ktor-lang\" or \"spring-boot-lang\" dependencies. One of them required for local start." }
-        require(dsl.size <= 1) { "Only one dependency should be used for DSL: either \"kotless-lang\", \"ktor-lang\" or \"spring-boot-lang\"." }
+        require(dsl.isNotEmpty()) { "Cannot find \"kotless-lang\", \"ktor-lang\", \"http4l-lang\" or \"spring-boot-lang\" dependencies. One of them required for local start." }
+        require(dsl.size <= 1) { "Only one dependency should be used for DSL: either \"kotless-lang\", \"ktor-lang\", \"http4k-lang\" or \"spring-boot-lang\"." }
 
         val (type, dependency) = dsl.entries.single()
 
@@ -76,7 +76,7 @@ internal open class KotlessLocalRunTask : DefaultTask() {
 
             environment[Constants.Local.serverPort] = myKotless.extensions.local.port
 
-            if (type == DSLType.Ktor || type == DSLType.SpringBoot) {
+            if (setOf(DSLType.Ktor, DSLType.http4k, DSLType.SpringBoot).contains(type)) {
                 val local = LocalParser.parse(myAllSources, Dependencies.getDependencies(project))
                 environment[Constants.Local.KtorOrSpringOrHttp4k.classToStart] = local.entrypoint.qualifiedName.substringBefore("::")
             }

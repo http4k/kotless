@@ -4,15 +4,21 @@ import com.kotlin.aws.runtime.dsl.runtime
 import io.kotless.DSLType
 import io.kotless.parser.LocalParser
 import io.kotless.plugin.gradle.dsl.kotless
-import io.kotless.plugin.gradle.utils.gradle.*
+import io.kotless.plugin.gradle.utils.gradle.Dependencies
+import io.kotless.plugin.gradle.utils.gradle.applyPluginSafely
+import io.kotless.plugin.gradle.utils.gradle.myImplementation
+import io.kotless.plugin.gradle.utils.gradle.myKtSourceSet
 import org.gradle.api.Project
 import org.gradle.api.tasks.bundling.AbstractArchiveTask
 import org.gradle.kotlin.dsl.dependencies
 
 object KotlessRuntimeTasks {
+    private val supportGraal = setOf(DSLType.Ktor, DSLType.http4k)
+
     fun Project.setupGraal() {
-        if (kotless.config.dsl.typeOrDefault != DSLType.Ktor) {
-            project.logger.warn("GraalVM Runtime can be used only with Ktor DSL for now")
+
+        if (supportGraal.contains(kotless.config.dsl.typeOrDefault)) {
+            project.logger.warn("GraalVM Runtime can be used only with $supportGraal DSL for now")
             return
         }
 
