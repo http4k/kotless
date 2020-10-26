@@ -3,22 +3,23 @@ package io.kotless.dsl.http4k
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler
 import io.kotless.InternalAPI
-import io.kotless.dsl.http4k.app.KotlessCall
-import io.kotless.dsl.http4k.app.KotlessEngine
-import io.kotless.dsl.http4k.lang.LambdaWarming
+import io.kotless.MimeType
 import io.kotless.dsl.model.CloudWatch
 import io.kotless.dsl.model.HttpRequest
 import io.kotless.dsl.model.HttpResponse
 import io.kotless.dsl.utils.Json
-import io.ktor.application.Application
-import io.ktor.server.engine.EngineAPI
-import io.ktor.server.engine.applicationEngineEnvironment
-import io.ktor.util.pipeline.execute
-import kotlinx.coroutines.runBlocking
+import org.http4k.core.Body
+import org.http4k.core.HttpHandler
+import org.http4k.core.Method
+import org.http4k.core.Request
+import org.http4k.core.Response
+import org.http4k.core.Status
+import org.http4k.lens.Header.CONTENT_TYPE
 import org.slf4j.LoggerFactory
 import java.io.InputStream
 import java.io.OutputStream
-
+import java.nio.ByteBuffer
+import kotlin.reflect.KClass
 
 /**
  * Entrypoint of Kotless application written with http4k DSL.
@@ -27,68 +28,65 @@ import java.io.OutputStream
  */
 @Suppress("unused")
 abstract class Kotless : RequestStreamHandler {
+    abstract val bootKlass: KClass<*>
+
     companion object {
         private val logger = LoggerFactory.getLogger(Kotless::class.java)
 
-        private var prepared = false
+        private var prepared: Boolean = false
 
-        @EngineAPI
-        val engine = KotlessEngine(applicationEngineEnvironment {
-            log = logger
-        }).also {
-            it.start()
-        }
+        private var handler: HttpHandler? = null
     }
 
-    abstract fun prepare(app: Application)
+    @InternalAPI
+    override fun handleRequest(input: InputStream, output: OutputStream, context: Context) {
+        if (!prepared) handler = { req: Request -> Response(Status.OK) }
 
-    @OptIn(InternalAPI::class, EngineAPI::class)
-    override fun handleRequest(input: InputStream, output: OutputStream, @Suppress("UNUSED_PARAMETER") any: Context?) {
-        if (!prepared) {
-            prepare(engine.application)
-            prepared = true
-        }
+        val json = input.bufferedReader().use { it.readText() }
 
-        val response = try {
-            runBlocking {
-                val json = input.bufferedReader().use { it.readText() }
+        logger.debug("Started handling request")
+        logger.trace("Request is {}", json)
 
-                logger.info("Started handling request")
-                logger.debug("Request is {}", json)
-
-                if (json.contains("Scheduled Event")) {
-                    val event = Json.parse(CloudWatch.serializer(), json)
-                    if (event.`detail-type` == "Scheduled Event" && event.source == "aws.events") {
-                        logger.info("Request is Scheduled Event")
-                        try {
-                            engine.environment.monitor.raise(LambdaWarming, engine.application)
-                        } catch (e: Throwable) {
-                            logger.error("One or more of the LambdaWarming handlers thrown an exception", e)
-                        }
-                        return@runBlocking null
-                    }
-                }
-
-                logger.info("Request is HTTP Event")
-
-                val request = Json.parse(HttpRequest.serializer(), json)
-                val call = KotlessCall(engine.application, request)
-
-                engine.pipeline.execute(call)
-
-                call.response.toHttp()
+        if (json.contains("Scheduled Event")) {
+            val event = Json.parse(CloudWatch.serializer(), json)
+            if (event.`detail-type` == "Scheduled Event" && event.source == "aws.events") {
+                logger.debug("Request is Scheduled Event. Nothing to do during warming")
+                return
             }
-        } catch (e: Throwable) {
-            logger.error("Error occurred during handle of request and was not caught", e)
-            null
         }
 
-        if (response != null) {
-            output.write(Json.bytes(HttpResponse.serializer(), response))
-        } else {
-            logger.info("Got null response")
-        }
+        logger.debug("Request is HTTP Event")
 
-        logger.info("Ended handling request")
+        val response = handler!!(Json.parse(HttpRequest.serializer(), json).asHttp4k())
+
+        output.write(Json.bytes(HttpResponse.serializer(), response.asKotless()))
+    }
+}
+
+private fun HttpRequest.asHttp4k(): Request {
+    val base = Request(Method.valueOf(method.name), path)
+        .body(body?.let { Body(ByteBuffer.wrap(it)) } ?: Body.EMPTY)
+
+    val withUriAndQueries = (myQueryStringParameters ?: emptyMap()).entries.fold(base) { acc, next ->
+        acc.query(next.key, next.value)
+    }
+
+    return (headers ?: emptyMap()).entries.fold(withUriAndQueries) { acc, next ->
+        next.value.fold(acc) { acc2, nextHeader -> acc2.header(next.key, nextHeader) }
+    }
+}
+
+private fun Response.asKotless(): HttpResponse {
+    val isBinary = CONTENT_TYPE(this)?.let {
+        MimeType.forDeclaration(it.value.split("/")[0], it.value.split("/")[1])
+    }?.isBinary ?: false
+
+    val hashHeaders = HashMap<String, String>().apply {
+        putAll(headers.map { it.first to (it.second ?: "") }.toMap())
+    }
+
+    return when {
+        isBinary -> HttpResponse(status.code, hashHeaders, body.payload.array())
+        else -> HttpResponse(status.code, hashHeaders, bodyString())
     }
 }
