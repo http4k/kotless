@@ -20,6 +20,8 @@ Kotless consists of two main parts:
       scheduled events, etc.
     * **Ktor** &mdash; Ktor engine that is introspected by Kotless. Use standard Ktor syntax and
       Kotless will generate deployment.
+    * **http4k** &mdash; http4k engine that is introspected by Kotless. Use standard http4k syntax and
+      Kotless will generate deployment.
     * **Spring Boot** &mdash; Spring Boot serverless container that is introspected by Kotless. Use
       standard Spring syntax and Kotless will generate deployment.
 * Kotless Gradle Plugin provides a way of deploying serverless application. For that, it:
@@ -73,10 +75,13 @@ dependencies {
 
     //or for Spring Boot (Note, that `spring-boot-lang` depends on Spring Boot version 2.3.0.RELEASE)
     //implementation("io.kotless", "spring-boot-lang", "0.1.6")
+
+    //or for http4k (Note, that `http4k-lang` depends on http4k version 3.261.0)
+    //implementation("io.kotless", "http4k-lang", "0.1.6")
 }
 ```
 
-*Please note that if you use Ktor or Spring Boot you will need to replace existing in your project
+*Please note that if you use Ktor, http4k or Spring Boot you will need to replace existing in your project
 dependency with a special Kotless `*-lang` dependency. Also, after that you will need to align
 version of dependent libraries (like Spring Security) with version bundled in `*-lang`
 (see this [paragraph](#integration-with-existing-applications))*
@@ -158,6 +163,14 @@ object Pages {
 }
 ```
 
+Or with http4k:
+
+```kotlin
+open class Application : Kotless() {
+    override fun handler() = routes("/" bind GET to { Response(OK).body("Hello World!") })
+}
+```
+
 ## Local start
 
 Kotless-based applications can start locally as an HTTP server. This functionality is supported by
@@ -193,7 +206,7 @@ application locally from your IDE.
 
 ## Integration with existing applications
 
-Kotless is able to deploy existing Spring Boot or Ktor application to AWS serverless platform. To do
+Kotless is able to deploy existing Spring Boot, Ktor or http4k application to AWS serverless platform. To do
 it, you'll need to set up a plugin and replace existing dependency with the appropriate Kotless DSL.
 
 For **Ktor**, you should replace existing engine (
@@ -206,6 +219,12 @@ For **Spring Boot** you should replace the starter you use (
 e.g. `implementation("org.springframework.boot", "spring-boot-starter-web", "2.3.0.RELASE)`)
 with `implementation("io.kotless", "spring-boot-lang", "0.1.6")`. Note that this dependency bundles
 Spring Boot of version `2.3.0.RELEASE`, so you also may need to upgrade other Spring Boot libraries
+to this version.
+
+For **http4k** you should replace the existing engine you use (
+e.g. `implementation("org.http4k", "http4k-server-netty", "3.261.0")`)
+with `implementation("io.kotless", "http4k-lang", "0.1.6")`. Note that this dependency bundles
+http4k of version `"3.261.0"`, so you also may need to upgrade other http4k libraries
 to this version.
 
 Once it is done, you may hit `deploy` task and make your application serverless. Note, that you will
@@ -294,6 +313,16 @@ And for Spring Boot:
 * `spring/shortener` &mdash; a simple URL shortener written with Spring
   Boot ([spring.short.kotless.io](https://spring.short.kotless.io)). This example demonstrates usage
   of `@RestController` (dynamic routes), Permissions API (for DynamoDB access), and Terraform
+  extensions.
+  
+And for http4k:
+
+* `http4k/site` &mdash; a site about Kotless written with http4k
+  Boot ([http4k.site.kotless.io](https://http4k.site.kotless.io)). This example demonstrates usage
+  of statics and static http4k routing.
+* `http4k/shortener` &mdash; a simple URL shortener written with http4k
+  Boot ([http4k.short.kotless.io](https://http4k.short.kotless.io)). This example demonstrates usage
+  of dynamic http4k routing, Permissions API (for DynamoDB access), and Terraform
   extensions.
 
 ## Want to know more?
