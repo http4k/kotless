@@ -30,16 +30,11 @@ abstract class Kotless : RequestStreamHandler {
 
     companion object {
         private val logger = LoggerFactory.getLogger(Kotless::class.java)
-
-        private var prepared = false
-
         private var handler: HttpHandler? = null
     }
 
     @InternalAPI
     override fun handleRequest(input: InputStream, output: OutputStream, context: Context) {
-        if (!prepared) handler = handler()
-
         val json = input.bufferedReader().use { it.readText() }
 
         logger.debug("Started handling request")
@@ -55,7 +50,9 @@ abstract class Kotless : RequestStreamHandler {
 
         logger.debug("Request is HTTP Event")
 
-        val response = handler!!(Json.parse(HttpRequest.serializer(), json).asHttp4k())
+        val httpHandler = handler ?: handler().also { handler = it }
+
+        val response = httpHandler(Json.parse(HttpRequest.serializer(), json).asHttp4k())
 
         output.write(Json.bytes(HttpResponse.serializer(), response.asKotless()))
     }
