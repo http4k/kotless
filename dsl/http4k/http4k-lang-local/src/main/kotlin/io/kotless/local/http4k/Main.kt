@@ -15,6 +15,7 @@ fun main() {
 
     val kotless = instance ?: error("The entry point $classToStart does not inherit from ${Kotless::class.qualifiedName}!")
 
+    kotless.han
     embeddedServer(Netty, port) {
         kotless.prepare(this)
     }.start(wait = true)

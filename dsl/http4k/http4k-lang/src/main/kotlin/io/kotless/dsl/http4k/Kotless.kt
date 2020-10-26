@@ -13,34 +13,32 @@ import org.http4k.core.HttpHandler
 import org.http4k.core.Method
 import org.http4k.core.Request
 import org.http4k.core.Response
-import org.http4k.core.Status
 import org.http4k.lens.Header.CONTENT_TYPE
 import org.slf4j.LoggerFactory
 import java.io.InputStream
 import java.io.OutputStream
 import java.nio.ByteBuffer
-import kotlin.reflect.KClass
 
 /**
  * Entrypoint of Kotless application written with http4k DSL.
  *
- * Override [prepare] method and setup your application
+ * Implement [handler] method and setup your application
  */
 @Suppress("unused")
 abstract class Kotless : RequestStreamHandler {
-    abstract val bootKlass: KClass<*>
+    abstract fun handler(): HttpHandler
 
     companion object {
         private val logger = LoggerFactory.getLogger(Kotless::class.java)
 
-        private var prepared: Boolean = false
+        private var prepared = false
 
         private var handler: HttpHandler? = null
     }
 
     @InternalAPI
     override fun handleRequest(input: InputStream, output: OutputStream, context: Context) {
-        if (!prepared) handler = { req: Request -> Response(Status.OK) }
+        if (!prepared) handler = handler()
 
         val json = input.bufferedReader().use { it.readText() }
 
