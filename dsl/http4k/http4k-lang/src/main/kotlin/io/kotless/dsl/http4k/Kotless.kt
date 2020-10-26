@@ -4,15 +4,21 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler
 import io.kotless.InternalAPI
 import io.kotless.MimeType
+import io.kotless.dsl.http4k.Kotless.Companion.KOTLESS_CONTEXT_KEY
+import io.kotless.dsl.http4k.Kotless.Companion.KOTLESS_REQUEST_KEY
 import io.kotless.dsl.model.CloudWatch
 import io.kotless.dsl.model.HttpRequest
 import io.kotless.dsl.model.HttpResponse
 import io.kotless.dsl.utils.Json
 import org.http4k.core.Body
+import org.http4k.core.Filter
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method
 import org.http4k.core.Request
+import org.http4k.core.RequestContexts
 import org.http4k.core.Response
+import org.http4k.core.then
+import org.http4k.filter.ServerFilters.InitialiseRequestContext
 import org.http4k.lens.Header.CONTENT_TYPE
 import org.slf4j.LoggerFactory
 import java.io.InputStream
@@ -29,6 +35,9 @@ abstract class Kotless : RequestStreamHandler {
     abstract fun handler(): HttpHandler
 
     companion object {
+        const val KOTLESS_CONTEXT_KEY = "HTTP4K_KOTLESS_CONTEXT"
+        const val KOTLESS_REQUEST_KEY = "HTTP4K_KOTLESS_REQUEST"
+
         private val logger = LoggerFactory.getLogger(Kotless::class.java)
         private var handler: HttpHandler? = null
     }
@@ -50,11 +59,25 @@ abstract class Kotless : RequestStreamHandler {
 
         logger.debug("Request is HTTP Event")
 
-        val httpHandler = handler ?: handler().also { handler = it }
+        val request = Json.parse(HttpRequest.serializer(), json)
 
-        val response = httpHandler(Json.parse(HttpRequest.serializer(), json).asHttp4k())
+        val contexts = RequestContexts()
+
+        val httpHandler = InitialiseRequestContext(contexts)
+            .then(AddLambdaContextAndRequest(context, request, contexts))
+            .then(handler ?: handler().also { handler = it })
+
+        val response = httpHandler(request.asHttp4k())
 
         output.write(Json.bytes(HttpResponse.serializer(), response.asKotless()))
+    }
+}
+
+internal fun AddLambdaContextAndRequest(ctx: Context?, request: Any, contexts: RequestContexts) = Filter { next ->
+    {
+        ctx?.apply { contexts[it][KOTLESS_CONTEXT_KEY] = ctx }
+        contexts[it][KOTLESS_REQUEST_KEY] = request
+        next(it)
     }
 }
 
