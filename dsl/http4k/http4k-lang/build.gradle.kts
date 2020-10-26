@@ -10,8 +10,6 @@ dependencies {
 
     api("org.http4k", "http4k-core", Versions.http4k)
 
-    api("io.ktor", "ktor-server-core", Versions.ktor)
-    api("io.ktor", "ktor-server-host-common", Versions.ktor)
     implementation("ch.qos.logback", "logback-classic", Versions.logback)
 }
 

@@ -2,8 +2,8 @@ package io.kotless.local.http4k
 
 import io.kotless.Constants
 import io.kotless.dsl.http4k.Kotless
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
+import org.http4k.server.SunHttp
+import org.http4k.server.asServer
 import kotlin.reflect.full.primaryConstructor
 
 fun main() {
@@ -15,8 +15,5 @@ fun main() {
 
     val kotless = instance ?: error("The entry point $classToStart does not inherit from ${Kotless::class.qualifiedName}!")
 
-    kotless.han
-    embeddedServer(Netty, port) {
-        kotless.prepare(this)
-    }.start(wait = true)
+    kotless.handler().asServer(SunHttp(port)).start()
 }
