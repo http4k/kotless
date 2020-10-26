@@ -167,7 +167,7 @@ Or with http4k:
 
 ```kotlin
 open class Application : Kotless() {
-    override fun handler() = routes("/" bind GET to { Response(OK).body("Hello World!") })
+    override fun handler(env: Map<String, String>, contexts: RequestContexts) = routes("/" bind GET to { Response(OK).body("Hello World!") })
 }
 ```
 

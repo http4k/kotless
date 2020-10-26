@@ -3,6 +3,7 @@ package io.kotless.local.http4k
 import io.kotless.Constants
 import io.kotless.Constants.Local.KtorOrSpringOrHttp4k
 import io.kotless.dsl.http4k.Kotless
+import org.http4k.core.RequestContexts
 import org.http4k.server.SunHttp
 import org.http4k.server.asServer
 import kotlin.reflect.full.primaryConstructor
@@ -17,5 +18,5 @@ fun main() {
 
     val port = System.getenv(Constants.Local.serverPort).toInt()
 
-    kotless.handler().asServer(SunHttp(port)).start()
+    kotless.handler(System.getenv(), RequestContexts()).asServer(SunHttp(port)).start()
 }
