@@ -7,9 +7,7 @@ version = rootProject.version
 
 dependencies {
     api(project(":dsl:common:lang-common"))
-
     api("org.http4k", "http4k-core", Versions.http4k)
-
     implementation("ch.qos.logback", "logback-classic", Versions.logback)
 }
 
