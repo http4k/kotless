@@ -2,6 +2,10 @@ import io.kotless.plugin.gradle.dsl.Webapp.Route53
 import io.kotless.plugin.gradle.dsl.kotless
 import io.kotless.resource.Lambda.Config.*
 
+var bob: String = "oi"
+
+
+
 group = rootProject.group
 version = rootProject.version
 
@@ -17,9 +21,11 @@ dependencies {
     implementation("io.ktor", "ktor-html-builder", "1.3.2")
 }
 
+fun prop(propName:String, defaultValue:String) = (if(project.hasProperty(propName)) project.property(propName).toString() else defaultValue)
+
 kotless {
     config {
-        bucket = "eu.http4k-short.s3.ktls.aws.intellij.net"
+        bucket = prop("bucket", "eu.http4k-short.s3.ktls.aws.intellij.net")
         prefix = "http4k-short"
 
         terraform {
@@ -29,7 +35,7 @@ kotless {
     }
 
     webapp {
-        route53 = Route53("http4k.short", "kotless.io")
+        route53 = Route53(prop("route53Alias", "http4k.short"), prop("route53Zone", "kotless.io"))
     }
 
     extensions {
