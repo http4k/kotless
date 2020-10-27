@@ -51,6 +51,7 @@ class Server : Kotless() {
         return routes(
             "/r" bind Method.GET to { req: Request -> Response(Status.OK).body("ok") },
             "/shorten" bind Method.GET to { req: Request -> Response(Status.OK).body("ok") },
+            "/hello" bind Method.GET to { req: Request -> Response(Status.OK).body("hi there.") },
             "/" bind Method.GET to { req: Request -> Response(Status.OK).body("ok") }
         )
     }
