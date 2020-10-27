@@ -1,9 +1,9 @@
 package io.kotless.parser.http4k
 
 import io.kotless.Application
-import io.kotless.AwsResource
+import io.kotless.AwsResource.CloudWatchLogs
 import io.kotless.HttpMethod
-import io.kotless.PermissionLevel
+import io.kotless.PermissionLevel.ReadWrite
 import io.kotless.URIPath
 import io.kotless.parser.Parser
 import io.kotless.parser.processor.ProcessorContext
@@ -23,7 +23,7 @@ object Http4kParser : Parser(setOf()) {
     override fun processResources(resources: Set<File>, context: ProcessorContext) {
 
         val key = TypedStorage.Key<Lambda>()
-        val function = Lambda("http4-kotless-function", context.jar, Lambda.Entrypoint("io.kotless.examples.Server::handleRequest"), context.lambda, setOf(Permission(AwsResource.CloudWatchLogs, PermissionLevel.ReadWrite, setOf("*"))))
+        val function = Lambda("http4-kotless-function", context.jar, Lambda.Entrypoint("io.kotless.examples.Server::handleRequest"), context.lambda, setOf(Permission(CloudWatchLogs, ReadWrite, setOf("*"))))
 
         context.resources.register(key, function)
 
