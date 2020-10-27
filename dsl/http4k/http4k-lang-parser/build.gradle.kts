@@ -10,6 +10,9 @@ dependencies {
     api(project(":dsl:http4k:http4k-lang"))
     api(project(":dsl:common:lang-parser-common"))
     api("org.jetbrains.kotlin", "kotlin-reflect", Versions.kotlin)
+
+    testImplementation(gradleTestKit())
+    testImplementation("junit:junit:4.12")
 }
 
 publishJar {

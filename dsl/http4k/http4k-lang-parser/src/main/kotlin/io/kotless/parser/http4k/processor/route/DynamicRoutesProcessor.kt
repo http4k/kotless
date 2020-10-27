@@ -24,13 +24,24 @@ import io.kotless.parser.utils.reversed
 import io.kotless.resource.Lambda
 import io.kotless.utils.TypedStorage
 import io.kotless.utils.everyNMinutes
+import org.http4k.core.Method
+import org.http4k.core.Request
+import org.http4k.core.Response
+import org.http4k.core.Status
+import org.http4k.routing.bind
+import org.http4k.routing.routes
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingContext
 
 internal object DynamicRoutesProcessor : SubTypesProcessor<Unit>() {
-    private val functions = mapOf(
+
+    val a = routes(
+        "" bind Method.GET to { req: Request -> Response(Status.OK) }
+    )
+
+    private val methods = mapOf(
         "io.ktor.routing.get" to HttpMethod.GET,
         "io.ktor.routing.post" to HttpMethod.POST,
         "io.ktor.routing.put" to HttpMethod.PUT,
@@ -42,7 +53,7 @@ internal object DynamicRoutesProcessor : SubTypesProcessor<Unit>() {
 
     override val klasses = setOf(Kotless::class)
 
-    override fun mayRun(context: ProcessorContext) = context.output.check(GlobalActionsProcessor) && context.output.check(EntrypointProcessor)
+    override fun mayRun(context: ProcessorContext) = true
 
     override fun process(files: Set<KtFile>, binding: BindingContext, context: ProcessorContext) {
         val globalPermissions = context.output.get(GlobalActionsProcessor).permissions
@@ -50,10 +61,12 @@ internal object DynamicRoutesProcessor : SubTypesProcessor<Unit>() {
 
         processClasses(files, binding) { klass, _ ->
             klass.visitNamedFunctions(filter = { func -> func.name == Kotless::handler.name }) { func ->
-                func.visitCallExpressionsWithReferences(binding = binding, filter = { it.getFqName(binding) in functions.keys }) { element ->
+                func.visitCallExpressionsWithReferences(binding = binding, filter = { it.getFqName(binding) === "org.http4k.routing.bind" }) { element ->
+
+                    element.calleeExpression
                     val outer = getDynamicPath(element, binding)
 
-                    val method = functions[element.getFqName(binding)] ?: error(element, "Unknown Ktor HTTP handler definition")
+                    val method = methods[element.getFqName(binding)] ?: error(element, "Unknown Ktor HTTP handler definition")
 
                     val permissions = PermissionsProcessor.process(element, binding) + globalPermissions
 
