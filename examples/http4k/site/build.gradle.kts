@@ -14,8 +14,6 @@ dependencies {
     implementation("io.kotless", "http4k-lang", "0.1.7-beta-4")
 
     implementation(project(":common:site-shared"))
-
-    implementation("io.kotless", "ktor-lang", "0.1.7-beta-4")
 }
 
 kotless {
