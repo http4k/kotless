@@ -1,10 +1,13 @@
 package io.kotless.parser.http4k
 
+import io.kotless.Application
+import io.kotless.HttpMethod
+import io.kotless.URIPath
 import io.kotless.parser.Parser
-import io.kotless.parser.http4k.processor.action.GlobalActionsProcessor
-import io.kotless.parser.http4k.processor.route.DynamicRoutesProcessor
-import io.kotless.parser.http4k.processor.route.StaticRoutesProcessor
-import io.kotless.parser.processor.config.EntrypointProcessor
+import io.kotless.parser.processor.ProcessorContext
+import io.kotless.resource.Lambda
+import io.kotless.utils.TypedStorage
+import java.io.File
 
 /**
  * Http4kDslParser parses Kotlin code with Kotlin embeddable compiler looking
@@ -13,4 +16,14 @@ import io.kotless.parser.processor.config.EntrypointProcessor
  * The result of parsing is a number of Lambdas and StaticResources and associated
  * with them Dynamic and Static routes
  */
-object Http4kParser : Parser(setOf(EntrypointProcessor, GlobalActionsProcessor, DynamicRoutesProcessor, StaticRoutesProcessor))
+object Http4kParser : Parser(setOf()) {
+    override fun processResources(resources: Set<File>, context: ProcessorContext) {
+
+        val key = TypedStorage.Key<Lambda>()
+        val function = Lambda("http4-kotless-function", context.jar, Lambda.Entrypoint("io.kotless.examples.Server::handleRequest"), context.lambda, setOf())
+
+        context.resources.register(key, function)
+
+        context.routes.register(Application.ApiGateway.DynamicRoute(HttpMethod.GET, URIPath("/hello"), key))
+    }
+}
